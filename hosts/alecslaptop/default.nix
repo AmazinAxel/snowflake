@@ -13,7 +13,7 @@
     # Sea Islands Radeon support for Vulkan
     kernelParams = [ "radeon.cik_support=0" "amdgpu.cik_support=1" ];
     
-    initrd = { # make sure to load AMD GPU support
+    initrd = { # AMD GPU support
       kernelModules = [ "amdgpu" ];
       includeDefaultModules = false;
     };
@@ -25,7 +25,7 @@
   };
 
   services = {
-    upower.enable = true; # For getting battery level (used by the desktop)
+    upower.enable = true; # Battery level support (used by astal shell)
     power-profiles-daemon.enable = false; # No power-profiles!
     tlp = { # Better battery life
       enable = true;
