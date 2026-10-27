@@ -2,8 +2,6 @@
   main = { resolution = "1920x1080@144Hz"; position = "0 0"; };
   right = { position = "3200 0"; scale = "1.5"; };
 in {
-  imports = [ ../../home-manager/iotas.nix ];
-
   wayland.windowManager.sway.config = {
     output = {
       "HDMI-A-1" = main; # built in hdmi

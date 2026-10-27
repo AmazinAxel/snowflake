@@ -1,7 +1,8 @@
-{ pkgs, config, ... }: {
+{ inputs, pkgs, config, ... }: {
   imports = [
     ./hardware-configuration.nix
     ../common.nix
+    inputs.borealis.nixosModules.desktop
     ../../modules/desktop.nix
     ../../modules/mcdev.nix
     ../../modules/playit.nix

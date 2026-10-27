@@ -3,7 +3,7 @@
     ./services.nix
     ./books.nix
     ../common.nix
-    ../../modules/pi.nix
+    inputs.borealis.nixosModules.pi
   ];
 
   nixpkgs.overlays = [ inputs.plan.overlays.default ]; # pkgs.plan

@@ -1,10 +1,10 @@
-{ pkgs, config, ... }: {
+{ inputs, pkgs, config, ... }: {
   imports = [
     ../../modules/mcscripts.nix
     ../common.nix
-    ../../modules/pi.nix
+    inputs.borealis.nixosModules.pi
     ../../modules/mcdev.nix
-    ../../modules/home-manager.nix
+    inputs.borealis.nixosModules.home-manager
   ];
 
   systemd.tmpfiles.rules = [ "w /sys/class/leds/PWR/trigger - - - - none" ]; # no power LED
@@ -17,8 +17,8 @@
 
   home-manager.users.alec = {
     imports = [
-      ../../home-manager/fish.nix
-      ../../home-manager/helix.nix
+      "${inputs.borealis}/home-manager/fish.nix"
+      "${inputs.borealis}/home-manager/helix.nix"
     ];
     home.stateVersion = "26.05";
   };

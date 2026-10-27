@@ -1,9 +1,10 @@
-{ pkgs, lib, ... }: {
+{ inputs, pkgs, lib, ... }: {
   imports = [
     ./hardware-configuration.nix
     ./fingerprint.nix
     ../common.nix
-    ../../modules/laptop.nix
+    inputs.borealis.nixosModules.laptop
+    ../../modules/desktop.nix
   ];
 
   networking.hostName = "alecslaptop"; # Hostname
@@ -13,7 +14,6 @@
     gnome-sound-recorder
     gnome-disk-utility
     kdePackages.kdenlive
-    iotas
     maven
     orca-slicer
   ];
@@ -33,7 +33,6 @@
     users.alec = {
       directories = [
         ".local/share/Steam" ".steam" # Steam
-        ".local/share/iotas"
         ".local/share/kdenlive"
         ".config/OrcaSlicer"
       ];

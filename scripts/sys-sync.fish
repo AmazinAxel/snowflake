@@ -43,7 +43,7 @@ for f in $keyEntries
 end
 
 ## Rebuild latest
-cd /home/alec/Projects/flake/
+cd /home/alec/Projects/snowflake/
 set isDirty (git status --porcelain)
 
 if test -n "$isDirty"
@@ -54,4 +54,5 @@ else
 end
 
 # Astal
-date +%s%3N >/home/alec/Projects/flake/ags/lastSync.txt
+mkdir -p ~/.local/state/flurry
+date +%s%3N >~/.local/state/flurry/lastSync

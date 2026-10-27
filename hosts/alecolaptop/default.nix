@@ -1,8 +1,9 @@
-{ pkgs, ... }: {
+{ inputs, pkgs, ... }: {
   imports = [
     ./hardware-configuration.nix
     ../common.nix
-    ../../modules/laptop.nix
+    inputs.borealis.nixosModules.laptop
+    ../../modules/desktop.nix
   ];
 
   networking.hostName = "alecolaptop";
