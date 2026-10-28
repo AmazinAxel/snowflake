@@ -1,5 +1,3 @@
-#!/usr/bin/env fish
-
 function log
     set logFile /home/alec/logs.txt
 

@@ -72,7 +72,6 @@ in {
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [
-
       # see & type in console
       (pkgs.writeShellScriptBin "mc" ''
         if [ $# -gt 0 ]; then

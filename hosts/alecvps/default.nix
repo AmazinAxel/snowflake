@@ -22,7 +22,6 @@ in {
     fstrim.enable = false; # Proxmox handles this
     openssh = {
       openFirewall = true;
-      # settings.PermitRootLogin = "prohibit-password";
       settings.AllowTcpForwarding = true; # VSC Remote-SSH support
       extraConfig = ''
         Match User alec
@@ -41,7 +40,6 @@ in {
     wantedBy = [ "multi-user.target" ];
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
-    path = [ pkgs.mcstatus ]; # server list pings
     serviceConfig = {
       ExecStart = "${pkgs.bun}/bin/bun ${./tracker}/tracker.js";
       StateDirectory = "nocturn-tracker"; # /var/lib/nocturn-tracker

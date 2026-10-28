@@ -1,5 +1,7 @@
 import { serve } from "bun";
 import { Database } from "bun:sqlite";
+import { connect } from "net";
+import { resolveSrv } from "dns/promises";
 
 const servers = {
   mh: "nocturnmh.minehut.gg",
@@ -31,21 +33,65 @@ const getData = db.prepare(`
   ORDER BY timestamp ASC
 `);
 
-async function ping(host) {
-  const proc = Bun.spawn([ "mcstatus", host, "json" ], { stderr: "ignore" });
-  const timer = setTimeout(() => proc.kill(), pingTimeout);
-
-  try {
-    const status = JSON.parse(await new Response(proc.stdout).text());
-    if (!status.online) return null;
-
-    const online = status.status.players.online;
-    return online <= maxPlayers ? online : null;
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timer);
+// Java server list ping: https://minecraft.wiki/w/Java_Edition_protocol/Server_List_Ping
+const varint = (n) => {
+  const out = [];
+  do {
+    out.push((n & 0x7f) | (n >>> 7 ? 0x80 : 0));
+    n >>>= 7;
+  } while (n);
+  return out;
+};
+const packet = (...fields) => {
+  const body = fields.flat();
+  return Buffer.from([ ...varint(body.length), ...body ]);
+};
+const readVarint = (buf, pos) => { // [ value, next pos ], or null if incomplete
+  for (let n = 0, shift = 0; pos < buf.length; shift += 7) {
+    const b = buf[pos++];
+    n |= (b & 0x7f) << shift;
+    if (!(b & 0x80)) return [ n, pos ];
   };
+  return null;
+};
+
+async function ping(host) {
+  let port = 25565;
+  try { ({ name: host, port } = (await resolveSrv(`_minecraft._tcp.${host}`))[0]); } catch {};
+
+  return new Promise((resolve) => {
+    let buf = Buffer.alloc(0);
+    const sock = connect(port, host, () => {
+      const name = [ ...Buffer.from(host) ];
+      sock.write(Buffer.concat([
+        packet(0x00, varint(47), varint(name.length), name, port >> 8, port & 0xff, 0x01), // handshake, next state: status
+        packet(0x00) // status request
+      ]));
+    });
+    const done = (online) => {
+      clearTimeout(timer);
+      sock.destroy();
+      resolve(online);
+    };
+    const timer = setTimeout(() => done(null), pingTimeout);
+
+    sock.on("error", () => done(null));
+    sock.on("close", () => done(null));
+    sock.on("data", (chunk) => {
+      buf = Buffer.concat([ buf, chunk ]);
+      const len = readVarint(buf, 0);
+      if (!len || buf.length < len[1] + len[0]) return;
+
+      try {
+        const [ , strPos ] = readVarint(buf, len[1]); // packet id
+        const [ strLen, jsonPos ] = readVarint(buf, strPos);
+        const online = JSON.parse(buf.toString("utf8", jsonPos, jsonPos + strLen)).players.online;
+        done(online <= maxPlayers ? online : null);
+      } catch {
+        done(null);
+      };
+    });
+  });
 };
 
 async function poll() {

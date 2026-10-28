@@ -12,8 +12,6 @@ in {
       ${git} stash clear
       ${git} stash
 
-      #${git} reset --hard HEAD
-      #${git} clean -fd
       ${git} pull --rebase
 
       sudo systemctl start minecraft-server

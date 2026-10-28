@@ -87,20 +87,19 @@
         async function refreshData() {
             refreshButtonElement.innerHTML = "Refreshing...";
 
-            const response = (get7Days.checked)
-                ? await fetch("/getdataFrom7Days")
-                : await fetch("/getdata");
-            
-            const airnowResponse = await fetch("https://www.airnowapi.org/aq/observation/current/ziplatlong/?format=application/json&zipcode=98226&api_key=AIRNOW_TOKEN");
+            const [response, airnowResponse] = await Promise.all([
+                fetch(get7Days.checked ? "/getdataFrom7Days" : "/getdata"),
+                fetch("https://www.airnowapi.org/aq/observation/current/ziplatlong/?format=application/json&zipcode=98226&api_key=AIRNOW_TOKEN")
+            ]);
 
-            if (!response.ok && !airnowResponse.ok) {
-                throw new Error("Failed to fetch local data");
+            if (!response.ok || !airnowResponse.ok) {
                 refreshButtonElement.innerHTML = "Failed - Try again";
                 aqiElement.innerHTML = '?';
                 pm25Element.innerHTML = '?';
                 pm10Element.innerHTML = '?';
                 lastUpdatedElement.innerHTML = '?';
                 airnowSensorAQIElement.innerHTML = '?';
+                return;
             };
             const data = await response.json();
             const airnowData = await airnowResponse.json();
@@ -161,10 +160,12 @@
                     points: { size: 8 }
                 }
             };
-            chartElement.innerHTML = ""; // Clear old chart
-            new uPlot(opts, [timestamps, values], chartElement);
+            plot?.destroy(); // Clear old chart and its listeners
+            plot = new uPlot(opts, [timestamps, values], chartElement);
         };
+        let plot;
         refreshData();
+        get7Days.addEventListener('change', refreshData);
 
         function getFormattedAQIElement(aqi, shouldReturnColor = false) {
             let label, color;

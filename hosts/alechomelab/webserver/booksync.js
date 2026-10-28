@@ -85,12 +85,12 @@ export async function handleSync(req) {
   for (const dir of deleted) {
     rmSync(`${COMPILED}/${dir}`, { recursive: true, force: true });
     for (const f of [`${BOOKS}/${dir}.epub`, `${BOOKS}/${dir}.EPUB`])
-      if (existsSync(f)) rmSync(f, { force: true });
+      rmSync(f, { force: true });
   }
 
   // 2. What the device is missing, and only that.
-  const gone = new Set(deleted);
-  reply.get = compiledBooks().filter((n) => !have.includes(n) && !gone.has(n));
+  const skip = new Set([...have, ...deleted]);
+  reply.get = compiledBooks().filter((n) => !skip.has(n));
   reply.delete = deleted;
 
   return Response.json(reply);

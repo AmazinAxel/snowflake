@@ -1,11 +1,10 @@
 import { serve } from "bun";
 import { Database } from 'bun:sqlite';
-import { execSync } from "child_process";
+import { statSync } from "fs";
 import { handleSync, handleBookFile } from "./booksync.js";
 
 // is usb mounted?
-try { execSync("mountpoint -q /media"); }
-catch { process.exit(1); }
+if (statSync("/media").dev === statSync("/").dev) process.exit(1);
 
 await import(process.env.PLAN_SERVER); // host plan
 
@@ -17,7 +16,7 @@ db.run(`
     pm10 INTEGER NOT NULL,
     timestamp INTEGER PRIMARY KEY
   );
-  CREATE INDEX IF NOT EXISTS idx_timestamp ON airquality(timestamp DESC);
+  DROP INDEX IF EXISTS idx_timestamp; -- redundant with the rowid primary key
 `);
 
 const insert = db.prepare('INSERT INTO airquality (pm25, pm10, timestamp) VALUES (?, ?, ?)');

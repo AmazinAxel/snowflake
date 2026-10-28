@@ -8,28 +8,23 @@ let
       RestartSec = 5;
     };
   };
-  privileges = { # Fix webserver stuff
-    NoNewPrivileges = false;
-    PrivateUsers = false;
-  };
 in {
   systemd = {
     services = {
       # /etc/homelab/webserver.env with AIRNOW_TOKEN=
       webserver = service // {
-        path = [ pkgs.util-linux ];
         environment = {
           PLAN_SERVER = "${pkgs.plan}/server.js";
           PLAN_DATA_DIR = "/media/plan";
         };
-        serviceConfig = service.serviceConfig // privileges // {
+        serviceConfig = service.serviceConfig // {
           EnvironmentFile = "/etc/homelab/webserver.env";
           ExecStart = "${pkgs.bun}/bin/bun --smol ${./webserver}/webserver.js";
           MemoryMin = "32M"; # resident
         };
       };
       homelabDisplay = service // {
-        serviceConfig = service.serviceConfig // privileges // {
+        serviceConfig = service.serviceConfig // {
           ExecStart = "${inputs.homelab.packages.aarch64-linux.homelabDisplay}/bin/homelabDisplay";
           MemoryMin = "8M";
         };
@@ -58,7 +53,6 @@ in {
           CPUWeight = 10;
           CPUQuota = "200%";
           Nice = 19;
-          # RuntimeMaxSec = "2h";
           TimeoutStopSec = "1m";
         };
       };

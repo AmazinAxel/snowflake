@@ -188,9 +188,10 @@
           points: {size: 8}
         }
       };
-      chartElement.innerHTML = ""; // Clear old chart
-      new uPlot(opts, [timestamps, values.mh, values.mk, values.total], chartElement);
+      plot?.destroy(); // Clear old chart and its listeners
+      plot = new uPlot(opts, [timestamps, values.mh, values.mk, values.total], chartElement);
     };
+    let plot;
     refreshData();
     setInterval(refreshData, 60000); // poll
 

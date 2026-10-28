@@ -20,7 +20,7 @@
   };
 
   outputs = { nixpkgs, ... }@inputs: {
-    # headless devices
+    # headless devices:
     # nixos-rebuild switch --flake .#<hostname> --sudo --ask-sudo-password --build-host alec@alecpc --target-host alec@<hostname>
     nixosConfigurations = nixpkgs.lib.genAttrs [
       "alecslaptop" # Primary laptop

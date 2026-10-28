@@ -9,7 +9,7 @@ if not mountpoint -q /media
 end
 
 mkdir -p /media/Projects
-set token (cat /home/alec/GithubToken | string trim -r -c '\n')
+read token </home/alec/GithubToken
 set -x GIT_CONFIG_COUNT 9
 set -x GIT_CONFIG_KEY_0 safe.directory
 set -x GIT_CONFIG_VALUE_0 '*'
