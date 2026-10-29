@@ -3,8 +3,8 @@
     ../../modules/mcscripts.nix
     ../common.nix
     inputs.borealis.nixosModules.pi
+    inputs.borealis.nixosModules.helix
     ../../modules/mcdev.nix
-    inputs.borealis.nixosModules.home-manager
   ];
 
   systemd.tmpfiles.rules = [ "w /sys/class/leds/PWR/trigger - - - - none" ]; # no power LED
@@ -15,13 +15,10 @@
   };
   users.users.alec.shell = pkgs.fish; # use shell
 
-  home-manager.users.alec = {
-    imports = [
-      "${inputs.borealis}/home-manager/fish.nix"
-      "${inputs.borealis}/home-manager/helix.nix"
-    ];
-    home.stateVersion = "26.05";
-  };
+  home-manager.users.alec.imports = [
+    "${inputs.borealis}/home-manager/fish.nix"
+    ../../home-manager/skript.nix
+  ];
 
   mcdev = {
     enable = true;

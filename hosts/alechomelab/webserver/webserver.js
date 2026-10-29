@@ -16,7 +16,6 @@ db.run(`
     pm10 INTEGER NOT NULL,
     timestamp INTEGER PRIMARY KEY
   );
-  DROP INDEX IF EXISTS idx_timestamp; -- redundant with the rowid primary key
 `);
 
 const insert = db.prepare('INSERT INTO airquality (pm25, pm10, timestamp) VALUES (?, ?, ?)');

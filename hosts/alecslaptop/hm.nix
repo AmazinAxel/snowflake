@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }: let
+{ lib, ... }: let
   main = { resolution = "1920x1080@144Hz"; position = "0 0"; };
   right = { position = "3200 0"; scale = "1.5"; };
 in {
@@ -11,9 +11,7 @@ in {
       "DP-7" = right; # adapter
     };
 
-    startup = [
-      { command = "${pkgs.glib.bin}/bin/gdbus wait --session io.Astal.ags && thunderbird"; } # let ags load first
-    ];
+    startup = [{ command = "thunderbird"; }];
     assigns."5" = [{ app_id = "thunderbird"; }];
 
     workspaceOutputAssign = map (n: {

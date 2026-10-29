@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  imports = [ inputs.borealis.nixosModules.default ];
+  imports = with inputs.borealis.nixosModules; [ default tailscale ];
 
   borealis = {
     user = "alec";

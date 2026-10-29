@@ -30,18 +30,13 @@ in {
       if ! ${git} diff --cached --quiet; then
         date_str=$(date +%-m/%-d/%y)
 
-        top_files=$(${git} diff --cached --numstat \
-          | awk '$1 != "-" { print $1+$2"\t"$3 }' \
-          | sort -rn \
-          | head -3 \
-          | cut -f2 \
-          | xargs -n1 basename \
-          | paste -sd ', ')
+        # total, added, removed, path; biggest first
+        stats=$(${git} diff --cached --numstat \
+          | awk -F'\t' '$1 != "-" { print $1+$2"\t"$1"\t"$2"\t"$3 }' \
+          | sort -rn)
 
-        description=$(${git} diff --cached --numstat \
-          | awk '$1 != "-" { printf "%d\t- %s (+%s/-%s)\n", $1+$2, $3, $1, $2 }' \
-          | sort -rn \
-          | cut -f2-)
+        top_files=$(head -3 <<< "$stats" | awk -F'\t' '{ n = split($4, p, "/"); printf "%s%s", (NR > 1 ? ", " : ""), p[n] }')
+        description=$(awk -F'\t' '{ printf "- %s (+%s/-%s)\n", $4, $2, $3 }' <<< "$stats")
 
         msg="sync $date_str $top_files"
 

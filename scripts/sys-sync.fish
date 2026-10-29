@@ -53,6 +53,6 @@ else
     s nixos-rebuild boot --flake .
 end
 
-# Astal
+# Flurry
 mkdir -p ~/.local/state/flurry
 date +%s%3N >~/.local/state/flurry/lastSync

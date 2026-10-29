@@ -5,6 +5,7 @@
     ../common.nix
     inputs.borealis.nixosModules.laptop
     ../../modules/desktop.nix
+    ../../modules/laptop.nix
     ../../modules/bluetooth-devices.nix
   ];
 
@@ -40,9 +41,7 @@
   services = {
     flatpak.enable = true; # For running Sober
     scx = { # scheduler for less active cores
-      enable = true;
       package = pkgs.scx.rustscheds;
-      scheduler = "scx_lavd";
       extraArgs = [ "--autopower" ];
     };
   };

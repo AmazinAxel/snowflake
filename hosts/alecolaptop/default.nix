@@ -4,6 +4,7 @@
     ../common.nix
     inputs.borealis.nixosModules.laptop
     ../../modules/desktop.nix
+    ../../modules/laptop.nix
     ../../modules/bluetooth-devices.nix
   ];
 

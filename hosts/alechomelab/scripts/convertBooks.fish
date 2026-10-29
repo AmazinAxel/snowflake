@@ -12,7 +12,7 @@ mkdir -p $COMPILED
 for epub in $BOOKS/*.epub $BOOKS/*.EPUB
     test -f $epub; or continue
 
-    set -l stem (basename $epub | string replace -ir '\.epub$' '')
+    set -l stem (path basename -E $epub)
     set -l out $COMPILED/$stem
     set -l wgb $out/book.wgb
 

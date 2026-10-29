@@ -1,11 +1,5 @@
 function log
-    set logFile /home/alec/logs.txt
-
-    # Set file contents to the new log and the past 5 logs
-    begin
-        printf "%s\n" "$argv"
-        cat $logFile 2>/dev/null
-    end | head -n 5 > $logFile.tmp
-
-    mv $logFile.tmp $logFile
+    # new log on top, keep the last 5
+    read -z -l old </home/alec/logs.txt
+    printf '%s\n' "$argv" (string split -n \n -- $old)[1..4] >/home/alec/logs.txt
 end

@@ -17,9 +17,9 @@ in {
     package = pkgs.fprintd.override { inherit libfprint; };
   };
   security.pam.services = {
-    astal-auth.fprintAuth = false; # lockscreen password only
-    # ags lockscreen
-    astal-fprint.text = ''
+    flurry-auth.fprintAuth = false; # lockscreen password only
+    # flurry lockscreen
+    flurry-fprint.text = ''
       auth sufficient ${config.services.fprintd.package}/lib/security/pam_fprintd.so timeout=10
       auth required pam_deny.so
       account required pam_permit.so

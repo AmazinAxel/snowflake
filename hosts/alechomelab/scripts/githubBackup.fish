@@ -58,9 +58,6 @@ for row in (curl -s -H "Authorization: token $token" https://api.github.com/user
 
     if test -d "$targetDir/.git"
         echo "Pulling repo $repoName"
-        git -C "$targetDir" remote set-url origin "$cleanUrl" 2>/dev/null
-        or git -C "$targetDir" remote add origin "$cleanUrl"
-        git -C "$targetDir" config --local homelab.repoid "$repoId"
         git -C "$targetDir" fetch "$authUrl"
         and git -C "$targetDir" reset --hard FETCH_HEAD
         and git -C "$targetDir" clean -fd

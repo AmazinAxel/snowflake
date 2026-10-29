@@ -9,7 +9,10 @@
   ];
 
   networking.hostName = "alecpc";
-  home-manager.users.alec.imports = [ ./hm.nix ];
+  home-manager.users.alec = {
+    imports = [ ./hm.nix ];
+    dconf.settings."org/gnome/SoundRecorder".audio-profile = "mp3";
+  };
 
   swapDevices = [{ device = "/persist/swapfile"; size = 18 * 1024; }];
 
