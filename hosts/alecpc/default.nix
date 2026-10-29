@@ -48,7 +48,6 @@
   hardware.graphics.extraPackages = with pkgs; [ nvidia-vaapi-driver ];
 
   boot = {
-    initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
     extraModprobeConfig=''
       options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x1; PowerMizerDefault=0x1; PowerMizerDefaultAC=0x1"
     '';

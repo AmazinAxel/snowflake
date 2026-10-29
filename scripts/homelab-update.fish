@@ -33,3 +33,7 @@ s umount $mntPoint
 
 echo \n"[Homelab] Rebuilding"
 nixos-rebuild boot --flake .#alechomelab --sudo --build-host alec@alecpc --target-host alec@alechomelab
+and begin
+    echo \n"[Homelab] Collecting garbage"
+    echo $passwd | ssh alec@alechomelab nx-gc
+end
