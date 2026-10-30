@@ -13,11 +13,11 @@
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1793315119,
-        "narHash": "sha256-/aHG27coGC5xWdoSeYv/7MbN5G8uAG4cJztXlHcg3rM=",
+        "lastModified": 1793323153,
+        "narHash": "sha256-evc7BAo+CVUbXDy4NRiq01h0k1YVCVdNhiGIoWHO/u4=",
         "owner": "AmazinAxel",
         "repo": "borealis",
-        "rev": "f3ed57d4ff455e8c1df83724eb3c28abf080911a",
+        "rev": "babde526a7d0f58d3fdcaf8691571e48cafc83bd",
         "type": "github"
       },
       "original": {
@@ -86,11 +86,11 @@
         "nixpkgs-servo": "nixpkgs-servo"
       },
       "locked": {
-        "lastModified": 1793315089,
-        "narHash": "sha256-nauFfFLKNo18tpBnRqSCUIvydwaKqnkvLvGsHTHUfCs=",
+        "lastModified": 1793323136,
+        "narHash": "sha256-vggpe0qAtGXjZOiT0nnzBTwM1hApgo1DT06uu+Sbb60=",
         "owner": "AmazinAxel",
         "repo": "flurry",
-        "rev": "d0fe2441e5afd8e58885d482954492a484297942",
+        "rev": "67e62795b175ada6621147d7275ede5508067241",
         "type": "github"
       },
       "original": {
