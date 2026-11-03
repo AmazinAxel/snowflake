@@ -3,6 +3,7 @@
     ./hardware-configuration.nix
     ../common.nix
     inputs.borealis.nixosModules.laptop
+    inputs.borealis.nixosModules.tmux
     ../../modules/desktop.nix
     ../../modules/laptop.nix
     ../../modules/bluetooth-devices.nix

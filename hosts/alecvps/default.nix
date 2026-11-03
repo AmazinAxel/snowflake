@@ -1,9 +1,10 @@
-{ modulesPath, pkgs, lib, ... }:
+{ inputs, modulesPath, pkgs, lib, ... }:
 let
   key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICh1nH79rMAd7qEySygClFNsnGRsHRabisFZCD7nKYEz axel@amazinaxel.com";
 in {
   imports = [
     ../common.nix
+    inputs.borealis.nixosModules.tmux
     (modulesPath + "/virtualisation/proxmox-lxc.nix")
   ];
 

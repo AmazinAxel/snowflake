@@ -3,6 +3,7 @@
     ./hardware-configuration.nix
     ../common.nix
     inputs.borealis.nixosModules.desktop
+    inputs.borealis.nixosModules.tmux
     ../../modules/desktop.nix
     ../../modules/mcdev.nix
     ../../modules/playit.nix

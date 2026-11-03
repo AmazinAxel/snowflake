@@ -4,21 +4,15 @@
     ../common.nix
     inputs.borealis.nixosModules.pi
     inputs.borealis.nixosModules.helix
+    inputs.borealis.nixosModules.tmux
     ../../modules/mcdev.nix
   ];
 
   systemd.tmpfiles.rules = [ "w /sys/class/leds/PWR/trigger - - - - none" ]; # no power LED
 
-  programs.fish = {
-    enable = true; # enable ssh shell
-    shellAliases.pf = "hx ${config.mcdev.serverDir}/plugins/Skript/scripts";
-  };
-  users.users.alec.shell = pkgs.fish; # use shell
+  programs.fish.shellAliases.pf = "hx ${config.mcdev.serverDir}/plugins/Skript/scripts";
 
-  home-manager.users.alec.imports = [
-    "${inputs.borealis}/home-manager/fish.nix"
-    ../../home-manager/skript.nix
-  ];
+  home-manager.users.alec.imports = [ ../../home-manager/skript.nix ];
 
   mcdev = {
     enable = true;

@@ -33,6 +33,28 @@
   home-manager.users.alec = {
     imports = [ ../home-manager/skript.nix ];
     wayland.windowManager.sway.config.input."type:touchpad".pointer_accel = "0.3";
-    programs.flurry.settings.sideview.plan = "https://alechomelab.jerboa-frog.ts.net/";
+    programs.flurry.settings = {
+      sideview = {
+        plan = "https://alechomelab.jerboa-frog.ts.net/";
+        custom = "https://beta-docs.skriptlang.org/syntaxes/";
+      };
+      bluetoothNames = {
+        S80A = "Touchscreen Earbuds";
+        MINI_KEYBOARD = "2-key Presenter";
+        K38 = "Karaoke Speaker";
+        MOU-302 = "Ergo Mouse";
+      };
+      playlists = [
+        { name = "Study"; color = "red"; }
+        { name = "Focus"; color = "blue3"; }
+        { name = "Synthwave"; color = "purple"; }
+        { name = "Liked"; color = "blue4"; }
+        { name = "SynthAmbient"; color = "yellow"; }
+        { name = "Ambient"; color = "blue2"; }
+      ];
+      mpdCrossfade = 2;
+      syncCommand = [ "footclient" "-e" "fish" "-c" "sys-sync; echo 'Press a key to exit'; read --nchars=1" ];
+      notificationFilters = [ "Failed to connect to server" ];
+    };
   };
 }
