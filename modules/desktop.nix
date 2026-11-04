@@ -44,6 +44,10 @@
         K38 = "Karaoke Speaker";
         MOU-302 = "Ergo Mouse";
       };
+      soundNames = {
+        "Ryzen HD Audio Controller Speaker" = "Speaker";
+        "Ryzen HD Audio Controller Headphones" = "Headphones";
+      };
       playlists = [
         { name = "Study"; color = "red"; }
         { name = "Focus"; color = "blue3"; }
