@@ -18,7 +18,6 @@ rm $cred
 if test $mounted -eq 0
     echo \n"[Sync] Pulling music from NAS"
     rsync -av --ignore-existing "$mntPoint/Music/" /home/alec/Music/
-    mpc update >/dev/null
     echo \n"[Sync] Syncing wallpapers with NAS"
     rsync -av --ignore-existing "$mntPoint/Wallpapers/" /home/alec/Wallpapers/
     rsync -av --ignore-existing /home/alec/Wallpapers/ "$mntPoint/Wallpapers/"

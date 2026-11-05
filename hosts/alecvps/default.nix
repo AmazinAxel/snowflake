@@ -8,11 +8,7 @@ in {
     (modulesPath + "/virtualisation/proxmox-lxc.nix")
   ];
 
-  proxmoxLXC = {
-    privileged = false; # unprivileged container
-    manageNetwork = false; # Proxmox handles network
-    manageHostName = true; # keep networking.hostName
-  };
+  proxmoxLXC.manageHostName = true; # keep networking.hostName
 
   users.users.alec.initialPassword = "nixos"; # change with passwd
   networking.wireless.iwd.enable = false; # no wifi in a container
@@ -22,7 +18,6 @@ in {
   services = {
     fstrim.enable = false; # Proxmox handles this
     openssh = {
-      openFirewall = true;
       settings.AllowTcpForwarding = true; # VSC Remote-SSH support
       extraConfig = ''
         Match User alec

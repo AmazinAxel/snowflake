@@ -24,7 +24,6 @@
   hardware = {
     # custom spi dts for waveshare display output
     deviceTree = {
-      enable = true;
       filter = "*rpi-zero-2*.dtb";
       overlays = [{ name = "spi0"; dtsFile = ./spi0.dts; }];
     };
@@ -60,7 +59,6 @@
       settings = {
         global = {
           "server min protocol" = "SMB3";
-          "server max protocol" = "SMB3";
           "disable netbios" = "yes";
           "smb ports" = "445"; # no NetBIOS session port 139
 
@@ -68,7 +66,6 @@
           "cache directory" = "/run/samba/cache";
           "state directory" = "/run/samba/state";
 
-          "log level" = "0";
           "logging" = "syslog"; # on RAM
         };
         "USB" = {

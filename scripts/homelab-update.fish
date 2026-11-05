@@ -25,7 +25,6 @@ for playlist in $playlists
     $spotdl download "$fields[2]" --output $musicDir/$fields[1] --archive $musicDir/$fields[1].archive \
         --add-unavailable --threads 8 --skip-album-art
 end
-mpc update >/dev/null
 
 echo \n"[Homelab] Pushing music to NAS"
 rsync -av --ignore-existing $musicDir/ "$mntPoint/Music/"

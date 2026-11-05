@@ -65,7 +65,6 @@ in {
     };
     services.permablot = {
       requires = [ "permablot.socket" ];
-      after = [ "permablot.socket" ];
       serviceConfig = {
         ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd --exit-idle-time=1min permablot.local:80";
         DynamicUser = true;

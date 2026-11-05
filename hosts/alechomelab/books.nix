@@ -28,7 +28,6 @@ in {
       # once. Writes land in .compiled/, which is a separate directory and does
       # not re-arm this.
       PathChanged = "/media/books";
-      MakeDirectory = false;
     };
   };
 
