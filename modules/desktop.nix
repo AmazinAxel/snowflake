@@ -8,6 +8,7 @@
     rsync # Quickly pull files from NAS drive
     (writeScriptBin "sys-sync" (builtins.readFile ../scripts/sys-sync.fish))
     (writeScriptBin "homelab-update" (builtins.readFile ../scripts/homelab-update.fish))
+    (writeScriptBin "projects-status" (builtins.readFile ../scripts/projects-status.fish))
     (writeShellScriptBin "pass-sync" ''
       pass git pull --rebase && if [ "$(pass git rev-list '@{u}..HEAD' --count)" -gt 0 ]; then pass git push; fi
     '')
