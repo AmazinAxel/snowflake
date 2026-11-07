@@ -41,9 +41,6 @@
 
   services = {
     flatpak.enable = true; # For running Sober
-    scx = { # scheduler for less active cores
-      package = pkgs.scx.rustscheds;
-      extraArgs = [ "--autopower" ];
-    };
+    scx-loader.config.scheds.scx_lavd.auto_mode = [ "--autopower" ]; # scheduler for less active cores
   };
 }
