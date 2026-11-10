@@ -17,6 +17,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plan.url = "github:AmazinAxel/plan";
+    anbernix = {
+      url = "github:AmazinAxel/anbernix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { nixpkgs, ... }@inputs: {
@@ -29,6 +33,7 @@
       "alechomelab" # Homelab (Zero 2W)
       "alecdev" # Pi 4B dev server
       "alecvps" # VPS
+      "alechandheld" # Anbernic
     ] (host: nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
       modules = [ ./hosts/${host}/default.nix ];

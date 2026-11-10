@@ -6,6 +6,7 @@
   environment.systemPackages = with pkgs; [
     cifs-utils # Needed for mounting Samba NAS drive
     rsync # Quickly pull files from NAS drive
+    inputs.wintergreen.packages.${pkgs.stdenv.hostPlatform.system}.books # EPUB review → WGB → homelab
     (writeScriptBin "sys-sync" (builtins.readFile ../scripts/sys-sync.fish))
     (writeScriptBin "homelab-update" (builtins.readFile ../scripts/homelab-update.fish))
     (writeScriptBin "projects-status" (builtins.readFile ../scripts/projects-status.fish))

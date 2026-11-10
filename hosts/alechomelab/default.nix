@@ -1,7 +1,6 @@
 { inputs, ... }: {
   imports = [
     ./services.nix
-    ./books.nix
     ../common.nix
     inputs.borealis.nixosModules.pi
   ];
@@ -12,6 +11,9 @@
     "d /run/samba/lock 0755 root root -"
     "d /run/samba/cache 0755 root root -"
     "d /run/samba/state 0755 root root -"
+    # wintergreen books: compiled on a desktop by `books`, uploaded over ssh
+    "d /media/books 0775 alec users -"
+    "d /media/books/.read 0775 alec users -"
   ];
 
   users.extraGroups = {

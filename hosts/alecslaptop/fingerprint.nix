@@ -16,14 +16,7 @@ in {
     enable = true;
     package = pkgs.fprintd.override { inherit libfprint; };
   };
-  security.pam.services = {
-    flurry-auth.fprintAuth = false; # lockscreen password only
-    # flurry lockscreen
-    flurry-fprint.text = ''
-      auth sufficient ${config.services.fprintd.package}/lib/security/pam_fprintd.so timeout=10
-      auth required pam_deny.so
-      account required pam_permit.so
-    '';
-  };
+  # lockscreen password only: flurry verifies fingerprints over fprintd's D-Bus
+  security.pam.services.flurry-auth.fprintAuth = false;
   environment.persistence."/persist".directories = [ "/var/lib/fprint" ];
 }

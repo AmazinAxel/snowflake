@@ -2,25 +2,32 @@
 //
 // The device speaks HTTP rather than SMB: ESP-IDF ships no SMB client, and
 // SMB3 (which this host pins) signs every packet, which costs radio-on time on
-// a battery device. Samba stays for dropping EPUBs onto /media/books; the
-// reader never touches it.
+// a battery device.
+//
+// Books arrive already compiled: `books` (wintergreen's preprocess.fish) runs
+// on a desktop, converts EPUB → WGB there and uploads /media/books/<dir>/ over
+// ssh, moved into place only once complete. No EPUB ever lands on this host
+// and nothing here converts.
 //
 // One POST decides the whole sync, so a no-op costs a single round trip.
 //
 // Reading positions are not synced: the device keeps its own book.pos and this
 // side never sees it. .sync.json holds only the append-only read history.
 
-import { readdirSync, statSync, existsSync, rmSync, renameSync, writeFileSync, readFileSync, openSync, fsyncSync, closeSync } from "fs";
+import { readdirSync, statSync, existsSync, rmSync, renameSync, mkdirSync, writeFileSync, readFileSync, openSync, fsyncSync, closeSync } from "fs";
 
 export const BOOKS = "/media/books";
-export const COMPILED = `${BOOKS}/.compiled`;
+// Finished books are kept here rather than deleted, so the binaries stay on
+// hand. Dot-prefixed, so it is never listed as a book or served to the device.
+export const READ = `${BOOKS}/.read`;
 const STATE = `${BOOKS}/.sync.json`;
 
 // Book directory names are used as path segments, so they are validated rather
-// than trusted. Anything with a slash or a dot-segment is rejected outright.
+// than trusted. Anything with a slash, a dot-segment or a leading dot (.read,
+// upload staging) is rejected outright.
 const SAFE = /^[A-Za-z0-9 ._-]+$/;
 const safeName = (s) =>
-  typeof s === "string" && s.length > 0 && s.length < 128 && SAFE.test(s) && !s.includes("..");
+  typeof s === "string" && s.length > 0 && s.length < 128 && SAFE.test(s) && !s.includes("..") && !s.startsWith(".");
 
 function load() {
   try {
@@ -42,10 +49,10 @@ function save(state) {
   renameSync(tmp, STATE);
 }
 
-const compiledBooks = () => {
+const libraryBooks = () => {
   try {
-    return readdirSync(COMPILED, { withFileTypes: true })
-      .filter((e) => e.isDirectory() && existsSync(`${COMPILED}/${e.name}/book.wgb`))
+    return readdirSync(BOOKS, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && safeName(e.name) && existsSync(`${BOOKS}/${e.name}/book.wgb`))
       .map((e) => e.name);
   } catch {
     return [];
@@ -66,10 +73,10 @@ export async function handleSync(req) {
   const reply = {};
 
   // 1. Retire finished books. The state write is fsynced *before* anything is
-  // unlinked, so a crash can only ever leave the book still present — the
+  // moved, so a crash can only ever leave the book still in the library — the
   // device likewise waits for `delete` before removing its own copy.
   const done = Array.isArray(body.done) ? body.done : [];
-  const deleted = [];
+  const retired = [];
   for (const d of done) {
     if (!d || !safeName(d.dir)) continue;
     const title = String(d.title ?? d.dir).slice(0, 200);
@@ -77,26 +84,30 @@ export async function handleSync(req) {
     const key = `${title}|${author}`;
     if (!state.finished.some((f) => `${f.title}|${f.author}` === key))
       state.finished.push({ title, author, at: Math.floor(Date.now() / 1000) });
-    deleted.push(d.dir);
+    retired.push(d.dir);
   }
 
-  if (deleted.length) save(state);
+  if (retired.length) save(state);
 
-  for (const dir of deleted) {
-    rmSync(`${COMPILED}/${dir}`, { recursive: true, force: true });
-    for (const f of [`${BOOKS}/${dir}.epub`, `${BOOKS}/${dir}.EPUB`])
-      rmSync(f, { force: true });
+  // Moved, not deleted. A book already moved by an earlier sync (the device
+  // re-reports until it sees `delete`) is simply not there any more.
+  for (const dir of retired) {
+    const from = `${BOOKS}/${dir}`;
+    if (!existsSync(from)) continue;
+    mkdirSync(READ, { recursive: true });
+    rmSync(`${READ}/${dir}`, { recursive: true, force: true });
+    renameSync(from, `${READ}/${dir}`);
   }
 
   // 2. What the device is missing, and only that.
-  const skip = new Set([...have, ...deleted]);
-  reply.get = compiledBooks().filter((n) => !skip.has(n));
-  reply.delete = deleted;
+  const skip = new Set([...have, ...retired]);
+  reply.get = libraryBooks().filter((n) => !skip.has(n));
+  reply.delete = retired;
 
   return Response.json(reply);
 }
 
-// GET /booksync/<dir>/<file> — one file out of a compiled book.
+// GET /booksync/<dir>/<file> — one file out of a library book.
 //
 // The segments must be percent-decoded before validation: book names contain
 // spaces, so the device sends "/booksync/the%20odyssey/book.wgb" and
@@ -116,7 +127,7 @@ export function handleBookFile(pathname) {
   if (parts.length !== 3 || !safeName(parts[1]) || !safeName(parts[2]))
     return new Response("not found", { status: 404 });
 
-  const path = `${COMPILED}/${parts[1]}/${parts[2]}`;
+  const path = `${BOOKS}/${parts[1]}/${parts[2]}`;
   try {
     if (!statSync(path).isFile()) return new Response("not found", { status: 404 });
   } catch {

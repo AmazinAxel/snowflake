@@ -21,7 +21,6 @@
     orca-slicer
   ];
   programs.steam.enable = true; # Gaming
-  services.pipewire.alsa.support32Bit = true; # 32-bit games
 
   boot.consoleLogLevel = 3; # Suppress ACPI BIOS firmware bug spam
 
@@ -40,6 +39,8 @@
   };
 
   services = {
+    pipewire.alsa.support32Bit = true; # 32-bit games
+    # rtorrent.enable = true;
     flatpak.enable = true; # For running Sober
     scx-loader.config.scheds.scx_lavd.auto_mode = [ "--autopower" ]; # scheduler for less active cores
   };
