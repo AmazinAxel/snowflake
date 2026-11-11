@@ -30,7 +30,7 @@ in {
         };
       };
       daily = {
-        path = with pkgs; [ util-linux curl jq fish git ];
+        path = with pkgs; [ util-linux curl jq fish gitMinimal ]; # same git as programs.git, no full git+docs
         script = ''
           fish ${./scripts}/githubBackup.fish
           date +%s > /home/alec/lastSynced

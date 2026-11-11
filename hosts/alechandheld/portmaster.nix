@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 let
   portmasterVersion = "2026.03.09-2312";
 
@@ -222,10 +222,22 @@ let
   '';
 
   # FHS environment so PortMaster's pre-compiled aarch64 binaries can run
-  portmaster = (pkgs.buildFHSEnv.override { bubblewrap = setuidBwrap; }) {
+  # Keep man/doc outputs out of the FHS rootfs, and use the system's minimal
+  # locale set instead of the full 220 MB glibcLocales the FHS base adds.
+  noDocs = p: p // { meta = (p.meta or { }) // {
+    outputsToInstall = lib.subtractLists [ "man" "doc" "info" "devdoc" ] (p.meta.outputsToInstall or [ "out" ]);
+  }; };
+  fhsPkgs = pkgs
+    // lib.genAttrs [ "bashInteractiveFHS" "less" "shadow" "gawk" "gzip" "bzip2" "xz" ] (n: noDocs pkgs.${n})
+    // { glibcLocales = config.i18n.glibcLocales; };
+
+  portmaster = (pkgs.buildFHSEnv.override {
+    bubblewrap = setuidBwrap;
+    callPackage = fn: args: pkgs.callPackage fn (args // { pkgs = fhsPkgs; });
+  }) {
     name = "portmaster";
 
-    targetPkgs = pkgs: with pkgs; [
+    targetPkgs = pkgs: map noDocs (with pkgs; [
       # SDL2 stack — pugwash UI and most port games use SDL2.
       # sdl2Classic FIRST so /usr/lib/libSDL2-2.0.so.0 is real SDL2, not
       # sdl2-compat (see comment above — audio stutter in GameMaker ports).
@@ -284,7 +296,7 @@ let
       expat
       # libuuid — love.aarch64 and some ports link against libuuid
       util-linux
-    ];
+    ]);
 
     extraBwrapArgs = [
       # PulseAudio/PipeWire socket lives under /run/user — bwrap puts a tmpfs
@@ -540,6 +552,9 @@ XMLEOF
   };
 in {
   environment.systemPackages = [ portmaster ];
+
+  # System-wide too: drops the LLVM-enabled mesa (~270 MB) and libLLVM (~530 MB)
+  hardware.graphics.package = mesaNoLLVM;
 
   # Install a setuid-root bwrap binary on the tmpfs /run so PortMaster's FHS
   # sandbox can enter privileged mode without a user namespace.
