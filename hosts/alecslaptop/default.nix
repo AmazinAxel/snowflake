@@ -1,22 +1,15 @@
-{ inputs, pkgs, ... }: {
+{ pkgs, ... }: {
   imports = [
     ./hardware-configuration.nix
     ./fingerprint.nix
-    ../common.nix
-    inputs.borealis.nixosModules.laptop
-    inputs.borealis.nixosModules.tmux
-    ../../modules/desktop.nix
     ../../modules/laptop.nix
-    ../../modules/bluetooth-devices.nix
+    ../../modules/media.nix
   ];
 
   networking.hostName = "alecslaptop"; # Hostname
   home-manager.users.alec.imports = [ ./hm.nix ];
 
   environment.systemPackages = with pkgs; [
-    gnome-sound-recorder
-    gnome-disk-utility
-    kdePackages.kdenlive
     maven
     orca-slicer
   ];
@@ -31,7 +24,6 @@
     users.alec = {
       directories = [
         ".local/share/Steam" ".steam" # Steam
-        ".local/share/kdenlive"
         ".config/OrcaSlicer"
       ];
       files = [ ".config/ponderosa/config.toml" ];

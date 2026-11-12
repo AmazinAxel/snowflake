@@ -1,9 +1,5 @@
 // Book sync for the Xteink X4 running wintergreen.
 //
-// The device speaks HTTP rather than SMB: ESP-IDF ships no SMB client, and
-// SMB3 (which this host pins) signs every packet, which costs radio-on time on
-// a battery device.
-//
 // Books arrive already compiled: `books` (wintergreen's preprocess.fish) runs
 // on a desktop, converts EPUB → WGB there and uploads /media/books/<dir>/ over
 // ssh, moved into place only once complete. No EPUB ever lands on this host

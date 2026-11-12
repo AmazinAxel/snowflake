@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set mntPoint /mnt/alechomelab
+set nas alec@alechomelab:/media # USB drive, rsync over ssh
 read -g -P "[Sync] Enter password: " passwd --silent
 echo
 
@@ -8,22 +8,13 @@ function s --inherit-variable passwd
     echo $passwd | sudo -S -p '' $argv
 end
 
-s mkdir -p $mntPoint
-set cred (mktemp) # keeps the password out of ps
-printf 'username=alec\npassword=%s\n' $passwd >$cred
-s mount.cifs //alechomelab/USB $mntPoint -o credentials=$cred,uid=alec,gid=users
-set mounted $status
-rm $cred
-
-if test $mounted -eq 0
-    echo \n"[Sync] Pulling music from NAS"
-    rsync -av --ignore-existing "$mntPoint/Music/" /home/alec/Music/
+echo \n"[Sync] Pulling music from NAS"
+if rsync -av --ignore-existing "$nas/Music/" /home/alec/Music/
     echo \n"[Sync] Syncing wallpapers with NAS"
-    rsync -av --ignore-existing "$mntPoint/Wallpapers/" /home/alec/Wallpapers/
-    rsync -av --ignore-existing /home/alec/Wallpapers/ "$mntPoint/Wallpapers/"
-    set -q NAS_KEEP_MOUNT; or s umount $mntPoint # homelab-update reuses the mount
+    rsync -av --ignore-existing "$nas/Wallpapers/" /home/alec/Wallpapers/
+    rsync -av --ignore-existing /home/alec/Wallpapers/ "$nas/Wallpapers/"
 else
-    echo \n"[Sync] NAS mount failed - skipping music and wallpapers"
+    echo \n"[Sync] NAS unreachable - skipping music and wallpapers"
 end
 
 echo \n"[Sync] Syncing passwords"

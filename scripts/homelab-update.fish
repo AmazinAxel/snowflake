@@ -9,13 +9,7 @@ set playlists \
     "SynthAmbient https://open.spotify.com/playlist/4murW7FWRb0LFbG7eUwDy0" \
     "Ambient https://open.spotify.com/playlist/07lYUEyTkWP3NqIa7Kzyqx"
 
-set NAS_KEEP_MOUNT 1 # sys-sync leaves the NAS mounted for the push
-source (command -s sys-sync) # shares its password, s and mntPoint
-mountpoint -q $mntPoint
-or begin
-    echo \n"[Homelab] NAS not mounted"
-    exit 1
-end
+source (command -s sys-sync) # shares its password, s and nas
 
 set spotdl (nix build --no-link --print-out-paths nixpkgs#spotdl)/bin/spotdl # eval once
 mkdir -p $musicDir
@@ -27,11 +21,11 @@ for playlist in $playlists
 end
 
 echo \n"[Homelab] Pushing music to NAS"
-rsync -av --ignore-existing $musicDir/ "$mntPoint/Music/"
-s umount $mntPoint
+rsync -av --ignore-existing $musicDir/ "$nas/Music/"
+or exit 1
 
 echo \n"[Homelab] Rebuilding"
-nixos-rebuild boot --flake .#alechomelab --sudo --build-host alec@alecpc --target-host alec@alechomelab
+nde alechomelab boot
 and begin
     echo \n"[Homelab] Collecting garbage"
     echo $passwd | ssh alec@alechomelab nx-gc

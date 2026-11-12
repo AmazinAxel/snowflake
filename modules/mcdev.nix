@@ -28,7 +28,7 @@ let
 
       install -D $src $out/share/purpurmc/purpurmc.jar
 
-      makeWrapper ${lib.getExe pkgs.openjdk25} "$out/bin/minecraft-server" \
+      makeWrapper ${lib.getExe pkgs.jdk25_headless} "$out/bin/minecraft-server" \
         --append-flags "-jar $out/share/purpurmc/purpurmc.jar nogui" \
         --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ pkgs.udev ]}
 

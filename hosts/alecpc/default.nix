@@ -1,10 +1,8 @@
 { inputs, pkgs, config, ... }: {
   imports = [
     ./hardware-configuration.nix
-    ../common.nix
-    inputs.borealis.nixosModules.desktop
-    inputs.borealis.nixosModules.tmux
     ../../modules/desktop.nix
+    ../../modules/media.nix
     ../../modules/mcdev.nix
     ../../modules/playit.nix
   ];
@@ -23,32 +21,16 @@
     heapMB = 4096;
   };
 
-  environment.systemPackages = with pkgs; [
-    kdePackages.kdenlive
-    gnome-sound-recorder
-    gnome-disk-utility
-  ];
-
-  environment.persistence."/persist".users.alec.directories = [ ".local/share/kdenlive" ];
-
   services = {
     xserver.videoDrivers = [ "nvidia" ]; # Load nvidia drivers
-
-    # ONLY TAILNET
-    openssh = {
-      enable = true;  # for remote builds
-      openFirewall = false;
-    };
+    openssh.enable = true; # remote builds, tailnet only (borealis tailscale)
   };
-
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
-
-  powerManagement.cpuFreqGovernor = "performance";
 
   # Nvidia options --
   hardware.graphics.extraPackages = with pkgs; [ nvidia-vaapi-driver ];
 
   boot = {
+    kernelParams = [ "cpufreq.default_governor=performance" ]; # no cpupower + cpufreq.service
     extraModprobeConfig=''
       options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x1; PowerMizerDefault=0x1; PowerMizerDefaultAC=0x1"
     '';
@@ -58,6 +40,7 @@
   hardware.nvidia = {
     powerManagement.enable = true;
     open = false; # GPU architecture is older than Turing
+    nvidiaSettings = false; # gui pulls a second gtk/glib/icu stack from the cachyos pinned nixpkgs (~206M)
     package = config.boot.kernelPackages.nvidiaPackages.legacy_580; # GTX 1050 Ti last supported package
   };
 }

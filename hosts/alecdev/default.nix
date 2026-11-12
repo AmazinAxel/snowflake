@@ -1,18 +1,18 @@
-{ inputs, pkgs, config, ... }: {
+{ inputs, lib, config, ... }: {
   imports = [
     ../../modules/mcscripts.nix
-    ../common.nix
     inputs.borealis.nixosModules.pi
     inputs.borealis.nixosModules.helix
     inputs.borealis.nixosModules.tmux
     ../../modules/mcdev.nix
   ];
 
-  systemd.tmpfiles.rules = [ "w /sys/class/leds/PWR/trigger - - - - none" ]; # no power LED
-
   programs.fish.shellAliases.pf = "hx ${config.mcdev.serverDir}/plugins/Skript/scripts";
 
-  home-manager.users.alec.imports = [ ../../home-manager/skript.nix ];
+  home-manager.users.alec = {
+    imports = [ ../../home-manager/skript.nix ];
+    programs.helix.extraPackages = lib.mkForce [ ]; # no web/markdown LSPs (node, dotnet, harper)
+  };
 
   mcdev = {
     enable = true;
@@ -21,7 +21,7 @@
   };
 
   environment.persistence."/persist".directories = [ config.mcdev.serverDir ];
-  powerManagement.cpuFreqGovernor = "performance"; # better performance
+  boot.kernelParams = [ "cpufreq.default_governor=performance" ]; # better performance, no cpupower + cpufreq.service
 
   # Networking
   networking.hostName = "alecdev";

@@ -3,30 +3,21 @@ let
   key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICh1nH79rMAd7qEySygClFNsnGRsHRabisFZCD7nKYEz axel@amazinaxel.com";
 in {
   imports = [
-    ../common.nix
     inputs.borealis.nixosModules.tmux
+    inputs.borealis.nixosModules.headless
     (modulesPath + "/virtualisation/proxmox-lxc.nix")
   ];
 
   proxmoxLXC.manageHostName = true; # keep networking.hostName
-
-  users.users.alec.initialPassword = "nixos"; # change with passwd
   networking.wireless.iwd.enable = false; # no wifi in a container
   zramSwap.enable = false; # cant use in proxmox
   services.tailscale.interfaceName = "userspace-networking"; # no /dev/net/tun in unprivileged LXC
 
   services = {
     fstrim.enable = false; # Proxmox handles this
-    openssh = {
-      settings.AllowTcpForwarding = true; # VSC Remote-SSH support
-      extraConfig = ''
-        Match User alec
-          PasswordAuthentication yes
-      '';
-    };
+    openssh.settings.AllowTcpForwarding = true; # VSC Remote-SSH support
   };
 
-  users.users.root.openssh.authorizedKeys.keys = [ key ];
   users.users.alec.openssh.authorizedKeys.keys = [ key ]; # login key for fast access
 
   programs.nix-ld.enable = true; # for vsc
@@ -49,7 +40,6 @@ in {
   networking.firewall.allowedTCPPorts = [ 80 ];
 
   nix.settings.sandbox = false; # fix builds on the vps
-  services.logrotate.checkConfig = false; # fix build error
   fileSystems = lib.mkForce {}; # no need for noatime
   nixpkgs.hostPlatform = "x86_64-linux";
 

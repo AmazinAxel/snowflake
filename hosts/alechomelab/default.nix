@@ -1,16 +1,12 @@
-{ inputs, ... }: {
+{ inputs, pkgs, ... }: {
   imports = [
     ./services.nix
-    ../common.nix
     inputs.borealis.nixosModules.pi
   ];
 
   nixpkgs.overlays = [ inputs.plan.overlays.default ]; # pkgs.plan
 
   systemd.tmpfiles.rules = [
-    "d /run/samba/lock 0755 root root -"
-    "d /run/samba/cache 0755 root root -"
-    "d /run/samba/state 0755 root root -"
     # wintergreen books: compiled on a desktop by `books`, uploaded over ssh
     "d /media/books 0775 alec users -"
     "d /media/books/.read 0775 alec users -"
@@ -21,7 +17,7 @@
     spi = { };
   };
   users.users.alec.extraGroups = [ "gpio" "spi" ];
-  security.sudo.wheelNeedsPassword = false;
+  security.sudo-rs.wheelNeedsPassword = false;
 
   hardware = {
     # custom spi dts for waveshare display output
@@ -35,71 +31,25 @@
     extraModprobeConfig = ''
       options spidev bufsiz=65536
     '';
-    blacklistedKernelModules = [ "snd_bcm2835" "btbcm" "hci_uart" "bluetooth" ]; # dont need audio or bluetooth
   };
 
   # Networking
   networking = {
     hostName = "alechomelab";
-    firewall.allowedTCPPorts = [ 80 445 ]; # webserver, samba
+    firewall.allowedTCPPorts = [ 80 ]; # webserver
     firewall.interfaces.tailscale0.allowedTCPPorts = [ 8000 ]; # permablot proxy, tailnet only
-    useNetworkd = false; # use nm
-    networkmanager = {
-      enable = true;
-      wifi.powersave = false; # Stops network drops
-      settings.device."wifi.scan-rand-mac-address" = "no"; # helps with drops
-    };
-    wireless.iwd.enable = false; # use nm
   };
 
-  # must run 'sudo smbpasswd -a alec' to log in!!
   services = {
-    samba = { # USB NAS, Linux clients only (found via avahi below)
-      enable = true;
-      nmbd.enable = false; # dont need
-      winbindd.enable = false; # dont need
-      settings = {
-        global = {
-          "server min protocol" = "SMB3";
-          "disable netbios" = "yes";
-          "smb ports" = "445"; # no NetBIOS session port 139
-
-          "lock directory" = "/run/samba/lock";
-          "cache directory" = "/run/samba/cache";
-          "state directory" = "/run/samba/state";
-
-          "logging" = "syslog"; # on RAM
-        };
-        "USB" = {
-          path = "/media";
-          writable = true;
-          "valid users" = [ "alec" ];
-          "admin users" = [ "alec" ]; # Full read/write access
-        };
-      };
-    };
     openssh.settings.Macs = [ "hmac-sha2-512" ]; # fix ios pass
     avahi = { # need for my iot services and wintergreen!
       enable = true;
-      openFirewall = true;
       nssmdns4 = true; # resolve permablot.local for the proxy (services.nix)
-      settings.publish = {
-        disable-publishing = false;
-        publish-addresses = true;
-        disable-user-service-publishing = false; # NAS
+      publish = {
+        enable = true;
+        addresses = true;
+        userServices = true;
       };
-
-      extraServiceFiles.smb = ''
-        <?xml version="1.0" standalone='no'?>
-        <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
-        <service-group>
-          <name replace-wildcards="yes">%h</name>
-          <service>
-            <type>_smb._tcp</type>
-            <port>445</port>
-          </service>
-        </service-group>
-      '';
     };
   };
 
@@ -110,12 +60,9 @@
   };
 
   environment = {
+    systemPackages = [ pkgs.rsync ]; # desktops sync /media over ssh (sys-sync, homelab-update)
     persistence."/persist" = {
-      directories = [
-        "/var/lib/samba" # NAS login
-        "/etc/homelab" # Airnow token
-        "/etc/NetworkManager/system-connections" # networkmanager wifi
-      ];
+      directories = [ "/etc/homelab" ]; # Airnow token
       users.alec.files = [ "GithubToken" ]; # githubBackup
     };
   };

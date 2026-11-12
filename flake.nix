@@ -25,7 +25,7 @@
 
   outputs = { nixpkgs, ... }@inputs: {
     # headless devices:
-    # nixos-rebuild switch --flake .#<hostname> --sudo --ask-sudo-password --build-host alec@alecpc --target-host alec@<hostname>
+    # deploy: nde <hostname> [switch|boot]
     nixosConfigurations = nixpkgs.lib.genAttrs [
       "alecslaptop" # Primary laptop
       "alecolaptop" # Old laptop
@@ -36,7 +36,7 @@
       "alechandheld" # Anbernic
     ] (host: nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
-      modules = [ ./hosts/${host}/default.nix ];
+      modules = [ ./hosts/common.nix ./hosts/${host}/default.nix ];
     });
   };
 }

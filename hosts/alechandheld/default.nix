@@ -48,9 +48,8 @@ let
 
   persistDevice = "/dev/disk/by-uuid/44444444-4444-4444-8888-888888888888"; # mmcblk0p2
 in {
-  # sudo nixos-rebuild boot --flake .#alechandheld --target-host alec@10.0.0.169 --sudo --ask-sudo-password --no-reexec --option system "aarch64-linux"
+  # deploy: nde alechandheld boot (tailnet only, ssh is closed to the LAN)
   imports = [
-    ../common.nix
     inputs.borealis.nixosModules.arm # aarch64 extlinux + tmpfs root + /persist
     inputs.anbernix.nixosModules.anbernic-rg35xx-h # kernel, joypad, firmware, dtb
 
@@ -81,7 +80,8 @@ in {
   environment.systemPackages = with pkgs; [
     retroarchCustom
     fake08Core
-    libretro.mgba
+    # only the core: the package's retroarch-mgba wrapper pulls a second, stock retroarch
+    (runCommand "libretro-mgba-core" {} "install -Dt $out/lib/retroarch/cores ${libretro.mgba}/lib/retroarch/cores/*")
     libretro-core-info # has fake-08 core info too
   ];
 
@@ -337,9 +337,9 @@ in {
 
   hardware.graphics.enable = true; # Mesa/OpenGL
   security.rtkit.enable = true; # realtime priority for pw
-  powerManagement.cpuFreqGovernor = "schedutil";
   boot = {
     kernelParams = [
+      "cpufreq.default_governor=schedutil" # no cpupower + cpufreq.service
       "console=tty0" # show terminal early on boot
       "cma=256M" # default 32mb, for running more intensive games
       # Hibernation resume offset for /persist/swapfile, read from the cmdline

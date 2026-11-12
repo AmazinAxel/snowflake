@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, config, ... }:
 
 let
   service = { # basic service config
@@ -66,7 +66,7 @@ in {
     services.permablot = {
       requires = [ "permablot.socket" ];
       serviceConfig = {
-        ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd --exit-idle-time=1min permablot.local:80";
+        ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd --exit-idle-time=1min permablot.local:80";
         DynamicUser = true;
         MemoryMax = "16M";
       };

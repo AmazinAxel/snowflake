@@ -1,11 +1,11 @@
 { pkgs, inputs, ... }: {
   imports = with inputs.borealis.nixosModules; [
-    aseprite btop bun claude discord filezilla helix iotas lazygit libreoffice prismlauncher spicetify thunderbird valent vscode yazi zen
+    desktop # laptop.nix adds the laptop profile on top
+    aseprite btop bun claude discord filezilla helix iotas lazygit libreoffice prismlauncher spicetify thunderbird tmux valent vscode yazi zen
   ];
 
   environment.systemPackages = with pkgs; [
-    cifs-utils # Needed for mounting Samba NAS drive
-    rsync # Quickly pull files from NAS drive
+    rsync # Sync files with the NAS drive over ssh
     inputs.wintergreen.packages.${pkgs.stdenv.hostPlatform.system}.books # EPUB review → WGB → homelab
     (writeScriptBin "sys-sync" (builtins.readFile ../scripts/sys-sync.fish))
     (writeScriptBin "homelab-update" (builtins.readFile ../scripts/homelab-update.fish))
@@ -16,18 +16,21 @@
   ];
 
   services.udev = {
-    packages = [ pkgs.platformio-core.udev ];
-    extraRules = ''
-      # Pi Pico
-      SUBSYSTEM=="usb", ATTR{idVendor}=="2e8a", ATTR{idProduct}=="000a", MODE="0666"
-      SUBSYSTEM=="tty", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="000a", MODE="0666"
+    packages = [
+      pkgs.platformio-core.udev
+      # logged-in seat user only, not world-writable; uaccess must run before 73-seat-late
+      (pkgs.writeTextDir "lib/udev/rules.d/70-dev-boards.rules" ''
+        # Pi Pico
+        SUBSYSTEM=="usb", ATTR{idVendor}=="2e8a", ATTR{idProduct}=="000a", TAG+="uaccess"
+        SUBSYSTEM=="tty", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="000a", TAG+="uaccess"
 
-      # WCH CH32X035
-      SUBSYSTEM=="usb", ATTR{idVendor}=="4348", ATTR{idProduct}=="55e0", MODE="0666"
-      SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55e0", MODE="0666"
-      SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="8010", MODE="0666"
-      SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="8012", MODE="0666"
-    '';
+        # WCH CH32X035
+        SUBSYSTEM=="usb", ATTR{idVendor}=="4348", ATTR{idProduct}=="55e0", TAG+="uaccess"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55e0", TAG+="uaccess"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="8010", TAG+="uaccess"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="8012", TAG+="uaccess"
+      '')
+    ];
   };
   programs.nix-ld.enable = true; # For dynamic executables
   environment.persistence."/persist".users.alec.directories = [ ".platformio" ]; # dont break builds
