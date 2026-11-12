@@ -6,8 +6,7 @@
 
   nixpkgs.overlays = [ inputs.plan.overlays.default ]; # pkgs.plan
 
-  systemd.tmpfiles.rules = [
-    # wintergreen books: compiled on a desktop by `books`, uploaded over ssh
+  systemd.tmpfiles.rules = [ # wintergreen books
     "d /media/books 0775 alec users -"
     "d /media/books/.read 0775 alec users -"
   ];
@@ -19,37 +18,29 @@
   users.users.alec.extraGroups = [ "gpio" "spi" ];
   security.sudo-rs.wheelNeedsPassword = false;
 
-  hardware = {
-    # custom spi dts for waveshare display output
-    deviceTree = {
-      filter = "*rpi-zero-2*.dtb";
-      overlays = [{ name = "spi0"; dtsFile = ./spi0.dts; }];
-    };
+  hardware.deviceTree = { # spi dts display
+    filter = "*rpi-zero-2*.dtb";
+    overlays = [{ name = "spi0"; dtsFile = ./spi0.dts; }];
   };
   boot = {
     kernelModules = [ "spidev" ];
-    extraModprobeConfig = ''
-      options spidev bufsiz=65536
-    '';
+    extraModprobeConfig = "options spidev bufsiz=65536";
   };
 
   # Networking
   networking = {
     hostName = "alechomelab";
     firewall.allowedTCPPorts = [ 80 ]; # webserver
-    firewall.interfaces.tailscale0.allowedTCPPorts = [ 8000 ]; # permablot proxy, tailnet only
+    firewall.interfaces.tailscale0.allowedTCPPorts = [ 8000 ]; # permablot
   };
 
-  services = {
-    openssh.settings.Macs = [ "hmac-sha2-512" ]; # fix ios pass
-    avahi = { # need for my iot services and wintergreen!
+  services.avahi = { # need for my iot services and wintergreen!
+    enable = true;
+    nssmdns4 = true; # resolve permablot.local
+    publish = {
       enable = true;
-      nssmdns4 = true; # resolve permablot.local for the proxy (services.nix)
-      publish = {
-        enable = true;
-        addresses = true;
-        userServices = true;
-      };
+      addresses = true;
+      userServices = true;
     };
   };
 
@@ -60,10 +51,10 @@
   };
 
   environment = {
-    systemPackages = [ pkgs.rsync ]; # desktops sync /media over ssh (sys-sync, homelab-update)
+    systemPackages = [ pkgs.rsync ]; # desktop sync
     persistence."/persist" = {
       directories = [ "/etc/homelab" ]; # Airnow token
-      users.alec.files = [ "GithubToken" ]; # githubBackup
+      users.alec.files = [ "GithubToken" ]; # github backups
     };
   };
 

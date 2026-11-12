@@ -1,7 +1,7 @@
 { pkgs, inputs, config, ... }:
 
 let
-  service = { # basic service config
+  service = {
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Restart = "always";
@@ -11,7 +11,7 @@ let
 in {
   systemd = {
     services = {
-      # /etc/homelab/webserver.env with AIRNOW_TOKEN=
+      # /etc/homelab/webserver.env AIRNOW_TOKEN=
       webserver = service // {
         environment = {
           PLAN_SERVER = "${pkgs.plan}/server.js";
@@ -30,7 +30,7 @@ in {
         };
       };
       daily = {
-        path = with pkgs; [ util-linux curl jq fish gitMinimal ]; # same git as programs.git, no full git+docs
+        path = with pkgs; [ util-linux curl jq fish gitMinimal ];
         script = ''
           fish ${./scripts}/githubBackup.fish
           date +%s > /home/alec/lastSynced

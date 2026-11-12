@@ -9,11 +9,11 @@
         "rocknix-joypad": "rocknix-joypad"
       },
       "locked": {
-        "lastModified": 1794365790,
-        "narHash": "sha256-sTdFvQBn389CwrhLKyb94jqG9v9NgOjphmiW4Q784BU=",
+        "lastModified": 1794522726,
+        "narHash": "sha256-8zAAD8xglN4PQ+mcJ24iyeBKctC2q0t7HkEWDZhe7rs=",
         "owner": "AmazinAxel",
         "repo": "anbernix",
-        "rev": "3b49735f6ab03aeb2495d44549af47ed7786d006",
+        "rev": "9b8a40bd96de77c40433482085e4c8417da1ab1d",
         "type": "github"
       },
       "original": {
