@@ -536,11 +536,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794537956,
-        "narHash": "sha256-XbqfCqTV6gK1mCdIW/1mjmFS2D5OCkWDZSxjmOlNv9M=",
+        "lastModified": 1794554375,
+        "narHash": "sha256-72jZ8UM1upa+Do8exoOpj8hKQ/HD9SEN4nqY6lxj2hc=",
         "owner": "AmazinAxel",
         "repo": "wintergreen",
-        "rev": "c12ff78e5ecf674a7ec4877b2702cce131115543",
+        "rev": "b334824c92082d9ff2f245d6e34e9f837d285363",
         "type": "github"
       },
       "original": {
