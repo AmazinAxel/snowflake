@@ -15,6 +15,10 @@
   ];
   programs.steam.enable = true; # Gaming
 
+  # Vulkan renderer: needed for sway color_profile (flurry focus grayscale). Not in sway's
+  # extraSessionCommands: those wrap the sway binary, so its sandboxed config check fails.
+  environment.sessionVariables.WLR_RENDERER = "vulkan";
+
   boot.consoleLogLevel = 3; # Suppress ACPI BIOS firmware bug spam
 
   swapDevices = [{ device = "/persist/swapfile"; size = 18 * 1024; }];
