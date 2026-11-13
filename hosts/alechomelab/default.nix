@@ -37,10 +37,10 @@
   services.avahi = { # need for my iot services and wintergreen!
     enable = true;
     nssmdns4 = true; # resolve permablot.local
-    publish = {
-      enable = true;
-      addresses = true;
-      userServices = true;
+    settings.publish = { # module defaults publish nothing
+      disable-publishing = false;
+      publish-addresses = true;
+      disable-user-service-publishing = false;
     };
   };
 

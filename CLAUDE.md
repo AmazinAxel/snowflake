@@ -4,7 +4,7 @@ Alec's hosts on top of borealis (`~/Projects/borealis`). Public repo: no private
 
 ## Wiring
 - `flake.nix`: hosts via `genAttrs` → `hosts/common.nix` + `hosts/<host>/default.nix`; `specialArgs = { inputs }`; `nixpkgs` follows borealis.
-- `hosts/common.nix`: every host (added in flake.nix, never imported); imports `borealis.nixosModules.default`, sets `borealis.{user,flake,buildHost}`, ssh key, git identity, timezone.
+- `hosts/common.nix`: every host (added in flake.nix, never imported); imports `borealis.nixosModules.default`, sets `borealis.{user,flake}`, ssh key, git identity, timezone.
 - `modules/desktop.nix`: borealis desktop profile + apps + tmux, NAS scripts (`sys-sync`, `homelab-update`; rsync over ssh to `alechomelab:/media`), flurry sideview plan URL. `modules/laptop.nix`: desktop.nix + borealis laptop profile + laptop apps. `modules/media.nix`: kdenlive etc (alecpc, alecslaptop). `modules/{mcdev,mcscripts,playit}.nix`.
 - Deploy: `nde <host> [switch|boot]` (borealis fish function), builds on alecpc. Headless hosts get `borealis.nixosModules.headless` (pi includes it); keep their closures free of local/emulated builds.
 
