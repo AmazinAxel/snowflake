@@ -35,11 +35,11 @@
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1794545918,
-        "narHash": "sha256-4D3Brg4chnbUO/cBvCPN6l/rpy2njfOGciWyG5bmVME=",
+        "lastModified": 1794551942,
+        "narHash": "sha256-zqpxiytncU/uMXXWA6fz91lLXbjdFWRG8l/imjIVTMk=",
         "owner": "AmazinAxel",
         "repo": "borealis",
-        "rev": "adfde560be26c70f3fee4e28874e815ac81cc668",
+        "rev": "d9368e4c05f0e45379ffe1d165a04bab11442e46",
         "type": "github"
       },
       "original": {
