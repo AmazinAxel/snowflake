@@ -1,6 +1,7 @@
 import { serve } from "bun";
 import { Database } from 'bun:sqlite';
 import { statSync } from "fs";
+import { createHash, timingSafeEqual } from "crypto";
 import { handleSync, handleBookFile } from "./booksync.js";
 
 // is usb mounted?
@@ -9,6 +10,7 @@ if (statSync("/media").dev === statSync("/").dev) process.exit(1);
 await import(process.env.PLAN_SERVER); // host plan
 
 const db = new Database('/media/airQuality.db');
+db.run("PRAGMA journal_mode = TRUNCATE"); // keep the -journal file (tmpfiles makes it): /media itself is read-only here
 
 db.run(`
   CREATE TABLE IF NOT EXISTS airquality (
@@ -32,6 +34,11 @@ const send = (status, message) =>
     headers: { "Content-Type": "text/plain" }
   });
 
+// optional shared secrets (webserver.env): "Authorization: Bearer <token>", unset = open
+const digest = (s) => createHash("sha256").update(s).digest(); // equal lengths for timingSafeEqual
+const authorized = (req, token) =>
+  !token || timingSafeEqual(digest(req.headers.get("authorization") ?? ""), digest(`Bearer ${token}`));
+
 async function handlePost(req) {
   try {
     const { pm25, pm10 } = await req.json();
@@ -53,7 +60,9 @@ async function handlePost(req) {
 };
 
 const page = await Bun.file(import.meta.dir + "/page.html").text();
-const pageWithToken = page.replaceAll("AIRNOW_TOKEN", process.env.AIRNOW_TOKEN);
+const pageWithToken = page
+  .replaceAll("AIRNOW_TOKEN", process.env.AIRNOW_TOKEN)
+  .replaceAll("AIRNOW_ZIP", process.env.AIRNOW_ZIP);
 
 serve({
   port: 80,
@@ -61,13 +70,15 @@ serve({
     const url = new URL(req.url);
     const pathname = url.pathname;
 
-    if (pathname == "/booksync" && req.method === "POST")
+    if ((pathname == "/booksync" || pathname.startsWith("/booksync/")) && !authorized(req, process.env.BOOKSYNC_TOKEN))
+      return send(401, "Unauthorized");
+    else if (pathname == "/booksync" && req.method === "POST")
       return handleSync(req);
     else if (pathname.startsWith("/booksync/"))
       return handleBookFile(pathname);
 
     else if (req.method === "POST")
-      return handlePost(req);
+      return authorized(req, process.env.AIRQUALITY_TOKEN) ? handlePost(req) : send(401, "Unauthorized");
 
     else if (pathname == "/favicon.ico")
       return new Response(Bun.file(import.meta.dir + "/favicon.ico"), {

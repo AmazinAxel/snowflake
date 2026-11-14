@@ -1,25 +1,22 @@
 // Book sync for the Xteink X4 running wintergreen.
 //
-// Books arrive already compiled: `books` (wintergreen's preprocess.fish) runs
-// on a desktop, converts EPUB → WGB there and uploads /media/books/<dir>/ over
-// ssh, moved into place only once complete. No EPUB ever lands on this host
-// and nothing here converts.
+// Books arrive already compiled: `books` (wintergreen's tools/books) runs on a
+// desktop, converts EPUB → WGB there and uploads /media/books/<dir>/ over ssh,
+// moved into place only once complete. Nothing here converts. The reviewed
+// EPUBs land in /media/books/.epubs/ as a backup; this file never touches them.
 //
 // One POST decides the whole sync, so a no-op costs a single round trip.
 //
 // Reading positions are not synced: the device keeps its own book.pos and this
 // side never sees it. .sync.json holds only the append-only read history.
 
-import { readdirSync, statSync, existsSync, rmSync, renameSync, mkdirSync, writeFileSync, readFileSync, openSync, fsyncSync, closeSync } from "fs";
+import { readdirSync, statSync, existsSync, rmSync, renameSync, writeFileSync, readFileSync, openSync, fsyncSync, closeSync } from "fs";
 
 export const BOOKS = "/media/books";
-// Finished books are kept here rather than deleted, so the binaries stay on
-// hand. Dot-prefixed, so it is never listed as a book or served to the device.
-export const READ = `${BOOKS}/.read`;
 const STATE = `${BOOKS}/.sync.json`;
 
 // Book directory names are used as path segments, so they are validated rather
-// than trusted. Anything with a slash, a dot-segment or a leading dot (.read,
+// than trusted. Anything with a slash, a dot-segment or a leading dot (.epubs,
 // upload staging) is rejected outright.
 const SAFE = /^[A-Za-z0-9 ._-]+$/;
 const safeName = (s) =>
@@ -69,7 +66,7 @@ export async function handleSync(req) {
   const reply = {};
 
   // 1. Retire finished books. The state write is fsynced *before* anything is
-  // moved, so a crash can only ever leave the book still in the library — the
+  // deleted, so a crash can only ever leave the book still in the library — the
   // device likewise waits for `delete` before removing its own copy.
   const done = Array.isArray(body.done) ? body.done : [];
   const retired = [];
@@ -85,15 +82,10 @@ export async function handleSync(req) {
 
   if (retired.length) save(state);
 
-  // Moved, not deleted. A book already moved by an earlier sync (the device
-  // re-reports until it sees `delete`) is simply not there any more.
-  for (const dir of retired) {
-    const from = `${BOOKS}/${dir}`;
-    if (!existsSync(from)) continue;
-    mkdirSync(READ, { recursive: true });
-    rmSync(`${READ}/${dir}`, { recursive: true, force: true });
-    renameSync(from, `${READ}/${dir}`);
-  }
+  // Deleted: the EPUB in .epubs is the copy that is kept. A book already
+  // deleted by an earlier sync (the device re-reports until it sees `delete`)
+  // is simply not there any more, which `force` ignores.
+  for (const dir of retired) rmSync(`${BOOKS}/${dir}`, { recursive: true, force: true });
 
   // 2. What the device is missing, and only that.
   const skip = new Set([...have, ...retired]);

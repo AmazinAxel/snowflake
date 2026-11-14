@@ -10,9 +10,13 @@ end
 
 mkdir -p /media/Projects
 read token </home/alec/GithubToken
-set -x GIT_CONFIG_COUNT 9
+set -x GIT_CONFIG_COUNT 10
 set -x GIT_CONFIG_KEY_0 safe.directory
 set -x GIT_CONFIG_VALUE_0 '*'
+
+# token in env, not argv (env is owner-only in /proc)
+set -x GIT_CONFIG_KEY_9 http.https://github.com/.extraHeader
+set -x GIT_CONFIG_VALUE_9 "Authorization: Basic "(echo -n "AmazinAxel:$token" | base64 -w0)
 
 # reduce mem usage
 set -x GIT_CONFIG_KEY_1 pack.threads
@@ -32,7 +36,7 @@ set -x GIT_CONFIG_VALUE_7 0
 set -x GIT_CONFIG_KEY_8 maintenance.auto
 set -x GIT_CONFIG_VALUE_8 false
 
-for row in (curl -s -H "Authorization: token $token" https://api.github.com/user/repos?per_page=100 | jq -r '.[] | "\(.id)\t\(.full_name)"')
+for row in (echo "Authorization: token $token" | curl -s -H @- https://api.github.com/user/repos?per_page=100 | jq -r '.[] | "\(.id)\t\(.full_name)"') # header from stdin
     set fields (string split \t $row)
     set repoId $fields[1]
     set repo $fields[2]
@@ -41,8 +45,7 @@ for row in (curl -s -H "Authorization: token $token" https://api.github.com/user
 
     set repoName (string split '/' $repo)[2]
     set targetDir "/media/Projects/$repoName"
-    set cleanUrl "https://github.com/$repo.git" # origin
-    set authUrl "https://AmazinAxel:$token@github.com/$repo.git" # used only for the fetch
+    set cleanUrl "https://github.com/$repo.git" # origin, auth via extraHeader
 
     # renames
     if not test -d "$targetDir/.git"
@@ -58,13 +61,12 @@ for row in (curl -s -H "Authorization: token $token" https://api.github.com/user
 
     if test -d "$targetDir/.git"
         echo "Pulling repo $repoName"
-        git -C "$targetDir" fetch "$authUrl"
+        git -C "$targetDir" fetch "$cleanUrl"
         and git -C "$targetDir" reset --hard FETCH_HEAD
         and git -C "$targetDir" clean -fd
     else
         echo "Cloning repo $repoName"
-        if git clone "$authUrl" "$targetDir"
-            git -C "$targetDir" remote set-url origin "$cleanUrl" # no token
+        if git clone "$cleanUrl" "$targetDir"
             git -C "$targetDir" config --local homelab.repoid "$repoId"
         end
     end

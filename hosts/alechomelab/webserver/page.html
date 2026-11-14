@@ -89,7 +89,7 @@
 
             const [response, airnowResponse] = await Promise.all([
                 fetch(get7Days.checked ? "/getdataFrom7Days" : "/getdata"),
-                fetch("https://www.airnowapi.org/aq/observation/current/ziplatlong/?format=application/json&zipcode=98226&api_key=AIRNOW_TOKEN")
+                fetch("https://www.airnowapi.org/aq/observation/current/ziplatlong/?format=application/json&zipcode=AIRNOW_ZIP&api_key=AIRNOW_TOKEN")
             ]);
 
             if (!response.ok || !airnowResponse.ok) {
