@@ -35,11 +35,11 @@
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1794618588,
-        "narHash": "sha256-LvJpG7xtOoxCe15btL5Z7G9tqQhoESxSZ1UtZiIXBU0=",
+        "lastModified": 1794624484,
+        "narHash": "sha256-pKlFpR8gNibi/ObkrgduBaFPa3P5iQBWRyeyihdZvcs=",
         "owner": "AmazinAxel",
         "repo": "borealis",
-        "rev": "1b5c1903b67eed27ac245fda729c6c5662ceaa66",
+        "rev": "df787f0744e3bfd6fedeb61225ea13969af111ed",
         "type": "github"
       },
       "original": {
@@ -373,11 +373,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1793530215,
-        "narHash": "sha256-rXBx+z9KptvV+hm987LjbN13uJ5OV2kwY1Q0f78gJVg=",
+        "lastModified": 1794619036,
+        "narHash": "sha256-qtEvNBtgRcpC+K84zMprIkn82U902RLN7HhF2xkyGuk=",
         "owner": "pedorich-n",
         "repo": "playit-nixos-module",
-        "rev": "29606a144260bf5c9f864cf218b1f41fa193461f",
+        "rev": "2174c0960ca53c987b3dd17e5d9dadb8f686dea4",
         "type": "github"
       },
       "original": {
@@ -536,11 +536,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794618083,
-        "narHash": "sha256-vw6azstiFyYtqDR6ytsvSvF/RGE5w3/Or55MF4MBcHo=",
+        "lastModified": 1794624413,
+        "narHash": "sha256-CDr+N9cwCEMN89wGHrHL4vkvx/GMuLBMoC/ZcozB1Pg=",
         "owner": "AmazinAxel",
         "repo": "wintergreen",
-        "rev": "8a4fb12a0973434b11b2694f5d52e533b8a45f38",
+        "rev": "a3ff563dcdbf3fc026cece5d0ec85cb7d97e593d",
         "type": "github"
       },
       "original": {

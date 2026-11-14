@@ -6,9 +6,13 @@
 
   nixpkgs.overlays = [ inputs.plan.overlays.default ]; # pkgs.plan
 
-  systemd.tmpfiles.rules = [ # wintergreen books
-    "d /media/books 0775 alec users -"
+  systemd.tmpfiles.rules = [ # webserver (runs as alec) writes only these
+    "d /media/books 0775 alec users -" # wintergreen books
     "d /media/books/.read 0775 alec users -"
+    "d /media/plan 0755 alec users -"
+    "Z /media/plan - alec users -"
+    "f /media/airQuality.db 0644 alec users -"
+    "f /media/airQuality.db-journal 0644 alec users -" # kept (journal_mode TRUNCATE): /media is read-only to it
   ];
 
   users.extraGroups = {
@@ -16,7 +20,6 @@
     spi = { };
   };
   users.users.alec.extraGroups = [ "gpio" "spi" ];
-  security.sudo-rs.wheelNeedsPassword = false;
 
   hardware.deviceTree = { # spi dts display
     filter = "*rpi-zero-2*.dtb";
