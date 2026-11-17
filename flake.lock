@@ -351,11 +351,11 @@
     },
     "plan": {
       "locked": {
-        "lastModified": 1794941180,
-        "narHash": "sha256-lSeOwelQLuxHSR6HOnHhMSs/2JJIynIK5qKQ+vY76Fg=",
+        "lastModified": 1794949919,
+        "narHash": "sha256-nkr+hJVLA48Y+saKLfTJVJGe456xjEivzWgrrei6LEA=",
         "owner": "AmazinAxel",
         "repo": "plan",
-        "rev": "1374d81379f21af88aa8a5f3e5f6a5f5468552f9",
+        "rev": "e25e4f2c199342d2120d8488b53cf7a3d9b55576",
         "type": "github"
       },
       "original": {
