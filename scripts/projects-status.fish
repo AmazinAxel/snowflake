@@ -24,6 +24,7 @@ if set -q argv[2]
     exit
 end
 set root $HOME/Projects
+ssh-add -l >/dev/null 2>&1; or ssh-add # children use BatchMode, so unlock the key once up front
 for g in $root/*/.git $root/*/*/.git
     fish --no-config $self $root (path dirname $g) &
 end
