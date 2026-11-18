@@ -49,6 +49,6 @@ in {
 
   # Networking
   networking.hostName = "alecvps";
-  systemd.network.networks."20-default".enable = false; # Proxmox has ethernet!
+  systemd.network.networks."20-wired".enable = false; # Proxmox has ethernet!
   system.stateVersion = "25.11";
 }
