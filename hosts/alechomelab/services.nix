@@ -27,7 +27,7 @@ let
 in {
   systemd = {
     services = {
-      # /etc/homelab/webserver.env AIRNOW_TOKEN= AIRNOW_ZIP= and optional BOOKSYNC_TOKEN= AIRQUALITY_TOKEN=
+      # /etc/homelab/webserver.env optional BOOKSYNC_TOKEN= AIRQUALITY_TOKEN=
       webserver = service // {
         environment = {
           PLAN_SERVER = "${pkgs.plan}/server.js";

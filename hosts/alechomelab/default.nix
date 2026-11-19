@@ -56,7 +56,7 @@
   environment = {
     systemPackages = [ pkgs.rsync ]; # desktop sync
     persistence."/persist" = {
-      directories = [ "/etc/homelab" ]; # Airnow token
+      directories = [ "/etc/homelab" ]; # webserver.env tokens
       users.alec.files = [ "GithubToken" ]; # github backups
     };
   };

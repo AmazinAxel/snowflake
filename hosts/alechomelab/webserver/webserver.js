@@ -59,11 +59,6 @@ async function handlePost(req) {
   };
 };
 
-const page = await Bun.file(import.meta.dir + "/page.html").text();
-const pageWithToken = page
-  .replaceAll("AIRNOW_TOKEN", process.env.AIRNOW_TOKEN)
-  .replaceAll("AIRNOW_ZIP", process.env.AIRNOW_ZIP);
-
 serve({
   port: 80,
   fetch(req) {
@@ -77,14 +72,10 @@ serve({
     else if (pathname.startsWith("/booksync/"))
       return handleBookFile(pathname);
 
-    else if (req.method === "POST")
+    else if (pathname == "/" && req.method === "POST")
       return authorized(req, process.env.AIRQUALITY_TOKEN) ? handlePost(req) : send(401, "Unauthorized");
 
-    else if (pathname == "/favicon.ico")
-      return new Response(Bun.file(import.meta.dir + "/favicon.ico"), {
-        headers: { "Content-Type": "image/x-icon" }
-      });
-    else if (pathname.includes("/getdata")) {
+    else if ((pathname == "/getdata" || pathname == "/getdataFrom7Days") && req.method === "GET") {
       const data = (pathname == "/getdata")
         ? getData.all(Date.now() - 86400000) // Get past 24 hours
         : getData.all(Date.now() - 604800000); // Get past 7 days
@@ -93,6 +84,6 @@ serve({
       });
     };
 
-    return new Response(pageWithToken, { headers: { "Content-Type": "text/html" }});
+    return send(404, "Not found");
   }
 });

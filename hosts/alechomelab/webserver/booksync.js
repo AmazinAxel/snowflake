@@ -100,7 +100,7 @@ export async function handleSync(req) {
 // The segments must be percent-decoded before validation: book names contain
 // spaces, so the device sends "/booksync/the%20odyssey/book.wgb" and
 // URL.pathname keeps the escape. Undecoded, safeName() rejected the "%" and
-// every book file 404'd — and because the router falls through to the dashboard
+// every book file 404'd — and because the router then fell through to the dashboard
 // HTML, the device happily wrote *that* to the card as book.wgb.
 //
 // Decoding happens before validation, never after, so an encoded "..%2f" cannot
