@@ -13,6 +13,7 @@
     dconf.settings."org/gnome/SoundRecorder".audio-profile = "mp3";
   };
 
+  nix.settings.secret-key-files = [ "/persist/etc/nix/signing-key" ]; # sign builds for other hosts (common.nix trusts it)
   swapDevices = [{ device = "/persist/swapfile"; size = 18 * 1024; }];
 
   mcdev = {

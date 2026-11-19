@@ -1,30 +1,18 @@
-{ inputs, lib, config, ... }: {
+{ inputs, lib, ... }: {
   imports = [
-    ../../modules/mcscripts.nix
     inputs.borealis.nixosModules.pi
     inputs.borealis.nixosModules.helix
     inputs.borealis.nixosModules.tmux
-    ../../modules/mcdev.nix
   ];
 
-  programs.fish.shellAliases.pf = "hx ${config.mcdev.serverDir}/plugins/Skript/scripts";
-
   home-manager.users.alec = {
-    imports = [ ../../home-manager/skript.nix ];
     programs.helix.extraPackages = lib.mkForce [ ]; # no web/markdown LSPs (node, dotnet, harper)
   };
 
-  mcdev = {
-    enable = true;
-    serverDir = "/var/lib/minecraft";
-    heapMB = 2048;
-  };
-
-  environment.persistence."/persist".directories = [ config.mcdev.serverDir ];
-  boot.kernelParams = [ "cpufreq.default_governor=performance" ]; # better performance, no cpupower + cpufreq.service
+  # boot.kernelParams = [ "cpufreq.default_governor=performance" ]; # better performance, no cpupower + cpufreq.service
 
   # Networking
-  networking.hostName = "alecdev";
+  networking.hostName = "alecbox";
   system.stateVersion = "26.05";
 
 

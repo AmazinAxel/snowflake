@@ -31,7 +31,7 @@
       "alecolaptop" # Old laptop
       "alecpc" # Desktop/compute server
       "alechomelab" # Homelab (Zero 2W)
-      "alecdev" # Pi 4B dev server
+      "alecbox" # Pi 4B general purpose
       "alecvps" # VPS
       "alechandheld" # Anbernic
     ] (host: nixpkgs.lib.nixosSystem {

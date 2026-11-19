@@ -38,6 +38,7 @@
     pipewire.alsa.support32Bit = true; # 32-bit games
     # rtorrent.enable = true;
     flatpak.enable = true; # For running Sober
+    openssh.enable = true; # nde deploys, tailnet only (borealis tailscale)
     scx-loader.config.scheds.scx_lavd.auto_mode = [ "--autopower" ]; # scheduler for less active cores
   };
 }
