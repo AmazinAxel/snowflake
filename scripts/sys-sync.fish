@@ -34,8 +34,7 @@ end
 
 ## Rebuild latest
 if not test -d /home/alec/Projects/snowflake
-    s true # cache sudo for nx-switch
-    nx-switch # no local checkout: build from alecpc's
+    ns # no local checkout: build from alecpc's
 else if cd /home/alec/Projects/snowflake/; and test -n "$(git status --porcelain)"
     echo \n"[Sync] System flake is dirty - not updating system"
 else

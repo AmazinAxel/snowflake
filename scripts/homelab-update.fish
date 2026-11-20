@@ -28,5 +28,5 @@ echo \n"[Homelab] Rebuilding"
 nde alechomelab boot
 and begin
     echo \n"[Homelab] Collecting garbage"
-    echo $passwd | ssh alec@alechomelab nx-gc
+    echo $passwd | ssh alec@alechomelab ngc
 end

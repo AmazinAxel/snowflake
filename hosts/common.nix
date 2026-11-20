@@ -4,7 +4,7 @@
   borealis = {
     user = "alec";
     flake = "/home/alec/Projects/snowflake";
-    buildHost = "alecpc"; # nx-switch/nde/nsp build here
+    buildHost = "alecpc"; # ns/nde/nsp build here
   };
 
   users.users.alec.openssh.authorizedKeys.keys = [
